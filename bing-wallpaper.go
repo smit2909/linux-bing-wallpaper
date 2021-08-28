@@ -37,7 +37,7 @@ import (
 )
 
 var (
-	markets     = []string{"en-US", "zh-CN", "ja-JP", "en-AU", "en-UK", "de-DE", "fr-FR", "en-NZ", "en-CA", "es-ES", "es-XL", "pt-BR", "pt-PT" }
+	markets     = []string{"en-US", "zh-CN", "ja-JP", "en-AU", "en-UK", "de-DE", "fr-FR", "en-NZ", "en-CA", "es-ES", "es-XL", "pt-BR", "pt-PT"}
 	resolutions = []string{"1920x1200", "1920x1080", "1366x768", "1280x768", "1280x720", "1024x768"}
 )
 
@@ -180,6 +180,12 @@ func gsettingsSetWallpaper(name, pic, opts string) {
 	errChk(stat, err)
 }
 
+func setXmonadWallpaper(pic string) {
+	fmt.Print("Setting wallper for xmonad using feh..")
+	_, status, err := exec.Exec3("feh", "--bg-fill", pic, "> /dev/null")
+	errChk(status, err)
+}
+
 func setWallpaper(desktop, pic, opts, cmd string) {
 	fmt.Println("setting wallpaper for " + desktop)
 	var status int
@@ -214,6 +220,8 @@ func setWallpaper(desktop, pic, opts, cmd string) {
 		errChk(status, err)
 		_, status, err := exec.Exec3(cmd, "--wallpaper-mode", opts)
 		errChk(status, err)
+	case "xmonad":
+		setXmonadWallpaper(pic)
 	case "xfce":
 		setXfceWallpaper(pic)
 	case "kde4", "plasma5":
@@ -242,7 +250,7 @@ func setPlasmaWallpaper(pic, env string) {
 		if _, err := exec.Search("/usr/bin/gettext"); err != nil {
 			panic("please install gettext-runtime")
 		}
-	
+
 		lang, _ := exec.Env("LANG")
 		lang = strings.Split(lang, ".")[0]
 		console := "Desktop Shell Scripting Console"
